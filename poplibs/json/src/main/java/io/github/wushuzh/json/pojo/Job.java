@@ -6,7 +6,13 @@ import lombok.ToString;
 
 @ToString
 public class Job {
-    @Getter @Setter private String title;
-    @Getter @Setter private double annualIncome;
-    @Getter @Setter private int activeYears;
+  @Getter
+  @Setter
+  private String title;
+  @Getter
+  @Setter
+  private double annualIncome;
+  @Getter
+  @Setter
+  private int activeYears;
 }
