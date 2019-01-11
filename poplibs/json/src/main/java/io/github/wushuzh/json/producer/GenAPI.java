@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import io.github.wushuzh.json.pojo.ExampleLoan;
 import io.github.wushuzh.json.pojo.LoanApplication;
+import io.github.wushuzh.json.pojo.LoanDetails;
 
 public class GenAPI {
   public static void main(String[] args) throws IOException {
@@ -27,8 +28,19 @@ public class GenAPI {
     jsonGenerator.writeStringField("name", loanApplication.getName());
     jsonGenerator.writeStringField("purposeOfLoan", loanApplication.getPurposeOfLoan());
     
+    toJsonString(jsonGenerator, loanApplication.getLoanDetails());
+    
     jsonGenerator.writeEndObject();
     jsonGenerator.flush();
+  }
+
+  private static void toJsonString(JsonGenerator jsonGenerator, LoanDetails loanDetails) throws IOException {
+    jsonGenerator.writeFieldName("loanDetails");
+    jsonGenerator.writeStartObject();
+    jsonGenerator.writeNumberField("amount", loanDetails.getAmount());
+    jsonGenerator.writeStringField("startDate", loanDetails.getStartDate().toString());
+    jsonGenerator.writeStringField("endDate", loanDetails.getEndDate().toString());
+    jsonGenerator.writeEndObject();
   }
 
 }
