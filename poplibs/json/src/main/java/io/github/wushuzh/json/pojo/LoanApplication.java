@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-class LoanApplication {
+public class LoanApplication {
   @Getter
   @Setter
   private String name;
