@@ -8,7 +8,26 @@ import java.io.Reader;
  */
 public class TryWithACItf {
     public static void main(String[] args) {
+        System.out.println("Nested try catch");
         doTryCatchFinally();
+        System.out.println("\nTry with AC resource");
+        doTryWithResources();
+    }
+
+    private static void doTryWithResources() {
+        char[] buff = new char[8];
+        int length;
+        try (Reader reader = Helper.openReader("file1.txt")){
+            while ((length = reader.read(buff)) >= 0) {
+                System.out.println("\nlength: " + length);
+                for(int i=0; i < length; i++) {
+                    System.out.print(buff[i]);
+                }
+            }
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
     }
 
     private static void doTryCatchFinally() {
