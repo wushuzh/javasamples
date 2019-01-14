@@ -15,6 +15,19 @@ public class TryWithACItf {
         doTryWithResources();
         System.out.println("\nTry with Multi resources");
         doTryWithMultiResources();
+        System.out.println("\nTry with Any AC Obj");
+        doCloseThing();
+    }
+
+    private static void doCloseThing() {
+        try (MyAutoCloseable ac = new MyAutoCloseable()){
+            ac.saySomething();
+        } catch (IOException e) {
+            System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+            for (Throwable t : e.getSuppressed()) {
+                System.out.println("Suppressed: " + t.getMessage());
+            }
+        }
     }
 
     private static void doTryWithMultiResources() {
@@ -25,7 +38,7 @@ public class TryWithACItf {
                 System.out.println("\nlength: " + length);
                 writer.write(buff, 0, length);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
@@ -41,7 +54,7 @@ public class TryWithACItf {
                 }
             }
             System.out.println();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
@@ -58,7 +71,7 @@ public class TryWithACItf {
                     System.out.print(buff[i]);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Inside catch block: ");
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
         } finally {
