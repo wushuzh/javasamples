@@ -2,6 +2,7 @@ package io.github.wushuzh.core.stream;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 
 /**
  * TryWithACItf
@@ -12,15 +13,30 @@ public class TryWithACItf {
         doTryCatchFinally();
         System.out.println("\nTry with AC resource");
         doTryWithResources();
+        System.out.println("\nTry with Multi resources");
+        doTryWithMultiResources();
+    }
+
+    private static void doTryWithMultiResources() {
+        char[] buff = new char[8];
+        int length;
+        try (Reader reader = Helper.openReader("file1.txt"); Writer writer = Helper.openWriter("file2.txt")) {
+            while ((length = reader.read(buff)) >= 0) {
+                System.out.println("\nlength: " + length);
+                writer.write(buff, 0, length);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
     }
 
     private static void doTryWithResources() {
         char[] buff = new char[8];
         int length;
-        try (Reader reader = Helper.openReader("file1.txt")){
+        try (Reader reader = Helper.openReader("file1.txt")) {
             while ((length = reader.read(buff)) >= 0) {
                 System.out.println("\nlength: " + length);
-                for(int i=0; i < length; i++) {
+                for (int i = 0; i < length; i++) {
                     System.out.print(buff[i]);
                 }
             }
@@ -38,7 +54,7 @@ public class TryWithACItf {
             reader = Helper.openReader("file1.txt");
             while ((length = reader.read(buff)) >= 0) {
                 System.out.println("\nlength: " + length);
-                for(int i=0; i < length; i++) {
+                for (int i = 0; i < length; i++) {
                     System.out.print(buff[i]);
                 }
             }
@@ -53,7 +69,7 @@ public class TryWithACItf {
             } catch (IOException e2) {
                 System.out.println("Inside finally block:");
                 System.out.println(e2.getClass().getSimpleName() + " - " + e2.getMessage());
-			}
+            }
         }
     }
 }
