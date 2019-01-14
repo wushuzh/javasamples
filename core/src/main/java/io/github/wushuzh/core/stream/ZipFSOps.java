@@ -1,5 +1,6 @@
 package io.github.wushuzh.core.stream;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,10 +18,28 @@ import java.util.Map;
  */
 public class ZipFSOps {
     public static void main(String[] args) {
+        String[] data = {
+            "Line 1",
+            "Line 2 2",
+            "Line 3 3 3",
+            "Line 4 4 4 4",
+            "Line 5 5 5 5 5"
+        };
+
         try (FileSystem zipFs = openZip(Paths.get("myData.zip"))) {
             copyToZip(zipFs);
+            writeToFileInZip(zipFs, data);
         } catch (Exception e) {
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
+    }
+
+    private static void writeToFileInZip(FileSystem zipFs, String[] data) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(zipFs.getPath("/newFile1.txt"))){
+            for (String d : data) {
+                writer.write(d);
+                writer.newLine();
+            }
         }
     }
 
