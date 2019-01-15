@@ -1,6 +1,7 @@
 package io.github.wushuzh.json.producer;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -15,27 +16,31 @@ public class GenAPI {
     LoanApplication loanApplication = ExampleLoan.LOAN_APPLICATION;
     System.out.println(loanApplication);
     System.out.println();
-    toJsonString(loanApplication);
+    System.out.println(toJsonString(loanApplication));
 
   }
 
-  private static void toJsonString(LoanApplication loanApplication) throws IOException {
+  public static String toJsonString(LoanApplication loanApplication) throws IOException {
+
+    StringWriter stringWriter = new StringWriter();
 
     JsonFactory jsonFactory = new JsonFactory();
-    JsonGenerator jsonGenerator = jsonFactory.createGenerator(System.out);
+    JsonGenerator jsonGenerator = jsonFactory.createGenerator(stringWriter);
     jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
 
     jsonGenerator.writeStartObject();
-    
+
     jsonGenerator.writeStringField("name", loanApplication.getName());
     jsonGenerator.writeStringField("purposeOfLoan", loanApplication.getPurposeOfLoan());
-    
+
     toJsonString(jsonGenerator, loanApplication.getLoanDetails());
-    
+
     toJsonString(jsonGenerator, loanApplication.getJobs());
-    
+
     jsonGenerator.writeEndObject();
-    jsonGenerator.flush();
+    jsonGenerator.close();
+
+    return stringWriter.toString();
   }
 
   private static void toJsonString(JsonGenerator jsonGenerator, List<Job> jobs) throws IOException {
@@ -49,11 +54,12 @@ public class GenAPI {
       jsonGenerator.writeEndObject();
     }
     jsonGenerator.writeEndArray();
-    
-    
+
+
   }
 
-  private static void toJsonString(JsonGenerator jsonGenerator, LoanDetails loanDetails) throws IOException {
+  private static void toJsonString(JsonGenerator jsonGenerator, LoanDetails loanDetails)
+      throws IOException {
     jsonGenerator.writeFieldName("loanDetails");
     jsonGenerator.writeStartObject();
     jsonGenerator.writeNumberField("amount", loanDetails.getAmount());
