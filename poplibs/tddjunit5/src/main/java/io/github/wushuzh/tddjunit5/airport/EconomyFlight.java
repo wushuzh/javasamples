@@ -8,13 +8,13 @@ public class EconomyFlight extends Flight {
 
   @Override
   public boolean addPassenger(Passenger passenger) {
-    return passengersList.add(passenger);
+    return passengerSet.add(passenger);
   }
 
   @Override
   public boolean removePassenger(Passenger passenger) {
     if (!passenger.isVip()) {
-      return passengersList.remove(passenger);
+      return passengerSet.remove(passenger);
     }
     return false;
   }
