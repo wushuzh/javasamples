@@ -131,7 +131,6 @@ public class AirportTest {
       }
     }
 
-    @Disabled
     @Nested
     @DisplayName("When we have a vip passenger")
     class VipPassenger {
