@@ -2,6 +2,8 @@ package io.github.wushuzh.core.datetime;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 public class WorkPeriod {
 
@@ -19,5 +21,35 @@ public class WorkPeriod {
 
   public LocalDateTime getStartTime() {
     return startTime;
+  }
+
+  public Optional<WorkPeriod> split() {
+    LocalDateTime midnight = startTime.toLocalDate().plusDays(1).atStartOfDay();
+    return split(midnight);
+  }
+
+  private Optional<WorkPeriod> split(LocalDateTime splitTime) {
+    if (startTime.isBefore(splitTime) && splitTime.isBefore(endTime)) {
+      WorkPeriod newPeriod = new WorkPeriod(startTime, Duration.between(startTime, splitTime));
+      startTime = splitTime;
+      return Optional.of(newPeriod);
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(endTime, startTime);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    WorkPeriod other = (WorkPeriod) obj;
+    return Objects.equals(endTime, other.endTime)
+        && Objects.equals(startTime, other.startTime);
   }
 }
