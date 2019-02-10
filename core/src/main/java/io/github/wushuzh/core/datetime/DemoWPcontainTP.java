@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -21,6 +22,9 @@ public class DemoWPcontainTP {
     WorkPeriod wp1 = new WorkPeriod(startDT, Duration.ofHours(2));
 
     wp1.setTaskParts(Stream.of(t1, t2, t3).map(TaskPart::wholeOf).collect(toList()));
+    
+    Optional<WorkPeriod> wp2 = wp1.split(startDT.plusHours(1));
+    System.out.println(wp2.toString());
 
     System.out.println(wp1.toString());
   }

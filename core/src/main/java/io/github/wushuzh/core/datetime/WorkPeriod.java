@@ -4,8 +4,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 
 public class WorkPeriod {
 
@@ -44,10 +47,35 @@ public class WorkPeriod {
     return split(midnight);
   }
 
-  private Optional<WorkPeriod> split(LocalDateTime splitTime) {
+  public Optional<WorkPeriod> split(LocalDateTime splitTime) {
     if (startTime.isBefore(splitTime) && splitTime.isBefore(endTime)) {
+      // The new split WorkPeriod range is 1st half of original WorkPeriod
+      // while the 2nd half (remaining) is reassign to original WorkPeriod obj, i.e., this obj
       WorkPeriod newPeriod = new WorkPeriod(startTime, Duration.between(startTime, splitTime));
       startTime = splitTime;
+      if (!taskParts.isEmpty()) {
+        // First reassign TaskParts in two ends, i.e., earliest and latest
+        NavigableMap<LocalDateTime, TaskPart> timeToTaskPartMap = new TreeMap<>();
+        LocalDateTime taskStartTime = newPeriod.getStartTime();
+        for(TaskPart taskPart: taskParts) {
+          timeToTaskPartMap.put(taskStartTime, taskPart);
+          taskStartTime = taskStartTime.plus(taskPart.getDuration());
+        }
+        newPeriod.setTaskParts(new ArrayList<>(timeToTaskPartMap.headMap(splitTime).values()));
+        setTaskParts(new ArrayList<>(timeToTaskPartMap.tailMap(splitTime).values()));
+
+        // Then deal with the one TaskPart contains splitTime
+        Map.Entry<LocalDateTime, TaskPart> taskPartEntry = timeToTaskPartMap.lowerEntry(splitTime);
+        LocalDateTime partStartTime = taskPartEntry.getKey();
+        TaskPart partToSplit = taskPartEntry.getValue();
+        Duration partDuration = partToSplit.getDuration();
+        if (partStartTime.isBefore(splitTime) && partStartTime.plus(partDuration).isAfter(splitTime) ) {
+          // The 1st half of TaskPart will be cut to align the newly created WorkPeriod
+          // The 2nd half will fit into a new TaskPart and insert to the head of remaining WorkPeriod
+          TaskPart newTaskPart = partToSplit.split(Duration.between(partStartTime, splitTime));
+          getTaskParts().add(0, newTaskPart);
+        }
+      }
       return Optional.of(newPeriod);
     } else {
       return Optional.empty();

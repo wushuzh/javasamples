@@ -13,6 +13,16 @@ public class TaskPart {
     this.partSequenceNumber = partSequenceNumber;
   }
 
+  public Duration getDuration() {
+    return duration;
+  }
+
+  public TaskPart split(Duration beforeSplitDuration) {
+    TaskPart anotherTaskPart = owner.createTaskPart(getDuration().minus(beforeSplitDuration));
+    duration = beforeSplitDuration;
+    return anotherTaskPart;
+  }
+
   public static TaskPart wholeOf(Task t) {
     return t.createTaskPart(t.getDuration());
   }
