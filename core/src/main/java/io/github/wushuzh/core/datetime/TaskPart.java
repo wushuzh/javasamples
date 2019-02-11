@@ -33,4 +33,8 @@ public class TaskPart {
         + "(" + partSequenceNumber + "/" + owner.getTaskPartCount() + ") "
         + duration;
   }
+
+  public Object getOwner() {
+    return owner;
+  }
 }

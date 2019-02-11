@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-public class WorkPeriod {
+public class WorkPeriod implements Comparable<WorkPeriod> {
 
   private LocalDateTime startTime;
   private LocalDateTime endTime;
@@ -123,5 +123,10 @@ public class WorkPeriod {
 
   void addTaskPart(TaskPart taskPart) {
     taskParts.add(taskPart);
+  }
+
+  @Override
+  public int compareTo(WorkPeriod otherWorkPeriod) {
+    return startTime.compareTo(otherWorkPeriod.startTime);
   }
 }
