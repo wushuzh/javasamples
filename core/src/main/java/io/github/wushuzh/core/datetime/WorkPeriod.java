@@ -10,10 +10,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 public class WorkPeriod {
 
   private LocalDateTime startTime;
   private LocalDateTime endTime;
+
   private List<TaskPart> taskParts;
 
   WorkPeriod(LocalDateTime startTime, Duration d) {
@@ -28,10 +31,21 @@ public class WorkPeriod {
     this.startTime = startTime;
     this.endTime = endTime;
     this.taskParts = taskParts;
+    validatePeriodTimes(startTime, endTime);
+  }
+
+  private void validatePeriodTimes(LocalDateTime startTime, LocalDateTime endTime) {
+    if (endTime.isAfter(startTime.truncatedTo(DAYS).plusDays(2))) {
+      throw new IllegalArgumentException("Periods cannot span more than two days");
+    }
   }
 
   public LocalDateTime getStartTime() {
     return startTime;
+  }
+
+  public LocalDateTime getEndTime() {
+    return endTime;
   }
 
   List<TaskPart> getTaskParts() {
@@ -48,7 +62,7 @@ public class WorkPeriod {
   }
 
   public Optional<WorkPeriod> split(LocalDateTime splitTime) {
-    if (startTime.isBefore(splitTime) && splitTime.isBefore(endTime)) {
+    if (startTime.isBefore(splitTime) && ! splitTime.isAfter(endTime)) {
       // The new split WorkPeriod range is 1st half of original WorkPeriod
       // while the 2nd half (remaining) is reassign to original WorkPeriod obj, i.e., this obj
       WorkPeriod newPeriod = new WorkPeriod(startTime, Duration.between(startTime, splitTime));
