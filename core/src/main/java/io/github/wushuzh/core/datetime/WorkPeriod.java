@@ -120,4 +120,8 @@ public class WorkPeriod {
     }
     return sb.toString();
   }
+
+  void addTaskPart(TaskPart taskPart) {
+    taskParts.add(taskPart);
+  }
 }

@@ -14,6 +14,10 @@ public class Task {
     this(Duration.ofMinutes(minutes), description);
   }
 
+  public Task(int hours, int minutes, String description) {
+    this(Duration.ofHours(hours).plus(Duration.ofMinutes(minutes)), description);
+  }
+
   public Task(Duration duration, String description) {
     this.duration = duration;
     this.description = description;
