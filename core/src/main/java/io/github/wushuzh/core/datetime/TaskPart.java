@@ -34,7 +34,7 @@ public class TaskPart {
         + duration;
   }
 
-  public Object getOwner() {
+  public Task getOwner() {
     return owner;
   }
 }

@@ -13,8 +13,12 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import org.hamcrest.core.StringEndsWith;
+import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class CalendarTest {
 
@@ -40,6 +44,7 @@ public class CalendarTest {
 
     p20mins = new WorkPeriod(localSchedStart, localSchedStart.plusMinutes(20));
     p30mins = new WorkPeriod(localSchedStart.plusMinutes(60), localSchedStart.plusMinutes(90));
+    p60mins = new WorkPeriod(localSchedStart.plusMinutes(60), Duration.ofMinutes(60));
   }
 
   @Test
@@ -71,6 +76,22 @@ public class CalendarTest {
     assertEquals(localSchedStart.plusMinutes(20), FirstWP.getEndTime());
     WorkPeriod SecondWP = scheduledPeriods.get(1);
     assertEquals(localSchedStart.plusHours(1), SecondWP.getStartTime());
+  }
+
+  @Rule
+  public final ExpectedException thrown = ExpectedException.none();
+
+  @Test
+  public void testOverlappingPeriodsRejected() {
+    calendar.addWorkPeriod(p20mins);
+    WorkPeriod overLappingWP = new WorkPeriod(localSchedStart.plusMinutes(15), localSchedStart.plusMinutes(25));
+
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(StringStartsWith.startsWith("Work Periods cannot overlap:"));
+    thrown.expectMessage(p20mins.toString());
+    thrown.expectMessage(StringEndsWith.endsWith(overLappingWP.toString()));
+    calendar.addWorkPeriod(overLappingWP);
+
   }
 
   @Test
@@ -135,6 +156,31 @@ public class CalendarTest {
     assertEquals(1, taskParts2.size());
     assertEquals(t30mins, taskParts2.get(0).getOwner());
     assertEquals(Duration.ofMinutes(10), taskParts2.get(0).getDuration());
+  }
+
+  @Test
+  public void testAllocateTwoPeriodsFailure() {
+    calendar.addTask(t60mins);
+    calendar.addWorkPeriod(p20mins);
+    calendar.addWorkPeriod(p30mins);
+    Schedule schedule = calendar.createSchedule(clock);
+    assertFalse(schedule.isSuccessful());
+  }
+
+  @Test
+  public void testAllocatTwoTasksSuccess() {
+    calendar.addTask(t20mins);
+    calendar.addTask(t30mins);
+    calendar.addWorkPeriod(p60mins);
+    List<WorkPeriod> scheduledPeriods = calendar.createSchedule(clock).getScheduledPeriods();
+
+    assertEquals(1, scheduledPeriods.size());
+    List<TaskPart> taskParts = scheduledPeriods.get(0).getTaskParts();
+    assertEquals(2, taskParts.size());
+    assertEquals(t20mins, taskParts.get(0).getOwner());
+    assertEquals(Duration.ofMinutes(20), taskParts.get(0).getDuration());
+    assertEquals(t30mins, taskParts.get(1).getOwner());
+    assertEquals(Duration.ofMinutes(30), taskParts.get(1).getDuration());
   }
 
   @Test

@@ -34,6 +34,13 @@ public class Calendar {
   }
 
   public Calendar addWorkPeriod(WorkPeriod p) {
+    WorkPeriod preceding = workPeriods.floor(p);
+    WorkPeriod following = workPeriods.ceiling(p);
+    if (preceding != null && preceding.getEndTime().isAfter(p.getStartTime())) {
+      throw new IllegalArgumentException("Work Periods cannot overlap: " + preceding + "," + p);
+    } else if (following != null && following.getStartTime().isBefore(p.getEndTime())) {
+      throw new IllegalArgumentException("Work Periods cannot overlap: " + following + "," + p);
+    }
     workPeriods.add(p);
     return this;
   }
