@@ -43,6 +43,6 @@ public class Calendar {
       scheduledPeriods.add(p.split(p.getEndTime()).orElseThrow(IllegalArgumentException::new));
       remainingTaskParts = p.getTaskParts();
     }
-    return new Schedule(clock.getZone(), scheduledPeriods);
+    return new Schedule(clock.getZone(), scheduledPeriods, remainingTaskParts.isEmpty());
   }
 }

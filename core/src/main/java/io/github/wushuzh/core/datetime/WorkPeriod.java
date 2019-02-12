@@ -2,6 +2,8 @@ package io.github.wushuzh.core.datetime;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,12 @@ public class WorkPeriod implements Comparable<WorkPeriod> {
 
   public LocalDateTime getEndTime() {
     return endTime;
+  }
+
+  public Duration getDuration(ZoneId zoneId) {
+    ZonedDateTime startZdt = ZonedDateTime.of(startTime, zoneId);
+    ZonedDateTime endZdt = ZonedDateTime.of(endTime, zoneId);
+    return Duration.between(startZdt, endZdt);
   }
 
   List<TaskPart> getTaskParts() {
