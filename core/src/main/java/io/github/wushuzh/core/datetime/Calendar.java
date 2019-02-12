@@ -1,9 +1,12 @@
 package io.github.wushuzh.core.datetime;
 
 import java.time.Clock;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.Optional;
 import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
@@ -38,10 +41,17 @@ public class Calendar {
   public Schedule createSchedule(Clock clock) {
     List<TaskPart> remainingTaskParts = tasks.stream().map(TaskPart::wholeOf).collect(toList());
     List<WorkPeriod> scheduledPeriods = new ArrayList<>();
+
+    LocalDateTime ldt = LocalDateTime.now(clock);
     for (WorkPeriod p : workPeriods) {
-      p.setTaskParts(remainingTaskParts);
-      scheduledPeriods.add(p.split(p.getEndTime()).orElseThrow(IllegalArgumentException::new));
-      remainingTaskParts = p.getTaskParts();
+      LocalDateTime effectiveStartTime = p.getStartTime().isAfter(ldt) ? p.getStartTime() : ldt;
+      // TODO doesn't allow for DST changes during WorkPeriod
+      if (! Duration.between(effectiveStartTime, p.getEndTime()).minus(WorkPeriod.MINIMUM_DURATION).isNegative()) {
+        p.split(effectiveStartTime);
+        p.setTaskParts(remainingTaskParts);
+        scheduledPeriods.add(p.split(p.getEndTime()).orElseThrow(IllegalArgumentException::new));
+        remainingTaskParts = p.getTaskParts();
+      }
     }
     return new Schedule(clock.getZone(), scheduledPeriods, remainingTaskParts.isEmpty());
   }

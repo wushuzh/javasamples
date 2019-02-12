@@ -16,6 +16,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class WorkPeriod implements Comparable<WorkPeriod> {
 
+  static final Duration MINIMUM_DURATION = Duration.ofMinutes(5);
+
   private LocalDateTime startTime;
   private LocalDateTime endTime;
 

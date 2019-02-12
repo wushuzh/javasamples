@@ -137,4 +137,50 @@ public class CalendarTest {
     assertEquals(Duration.ofMinutes(10), taskParts2.get(0).getDuration());
   }
 
+  @Test
+  public void testNoAllocateTaskWithWorkPeriodsInPast() {
+    calendar.addTask(t20mins);
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.minusMinutes(60), localSchedStart.minusMinutes(30)));
+    Schedule schedule = calendar.createSchedule(clock);
+    assertFalse(schedule.isSuccessful());
+  }
+
+  @Test
+  public void testNowNearEndOfPeriodFails() {
+    calendar.addTask(t30mins);
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.minusMinutes(30), localSchedStart.plusSeconds(42)));
+
+    Schedule schedule = calendar.createSchedule(clock);
+    assertFalse(schedule.isSuccessful());
+  }
+
+  @Test
+  public void testNowNearEndOfPeridSucceeds() {
+    calendar.addTask(t30mins);
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.minusMinutes(30), localSchedStart.plusSeconds(42)));
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.plusMinutes(30), localSchedStart.plusMinutes(60)));
+
+    List<WorkPeriod> scheduledPeriods = calendar.createSchedule(clock).getScheduledPeriods();
+    List<TaskPart> taskParts = scheduledPeriods.get(0).getTaskParts();
+    assertEquals(1, taskParts.size());
+    assertEquals(Duration.ofMinutes(30), taskParts.get(0).getDuration());
+  }
+
+  @Test
+  public void testNowOKNearEndOfPeridSucceeds() {
+    calendar.addTask(t30mins);
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.minusMinutes(30), localSchedStart.plusMinutes(10)));
+    calendar.addWorkPeriod(new WorkPeriod(localSchedStart.plusMinutes(30), localSchedStart.plusMinutes(60)));
+
+    List<WorkPeriod> scheduledPeriods = calendar.createSchedule(clock).getScheduledPeriods();
+    assertEquals(2, scheduledPeriods.size());
+
+    List<TaskPart> taskPartsInWP1 = scheduledPeriods.get(0).getTaskParts();
+    assertEquals(1, taskPartsInWP1.size());
+    assertEquals(Duration.ofMinutes(10), taskPartsInWP1.get(0).getDuration());
+
+    List<TaskPart> taskPartsInWP2 = scheduledPeriods.get(1).getTaskParts();
+    assertEquals(1, taskPartsInWP2.size());
+    assertEquals(Duration.ofMinutes(20), taskPartsInWP2.get(0).getDuration());
+  }
 }
