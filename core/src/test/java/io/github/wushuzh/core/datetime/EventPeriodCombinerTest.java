@@ -48,4 +48,62 @@ public class EventPeriodCombinerTest {
     assertEquals(period.getStartTime(), p.getStartTime());
     assertEquals(period.getEndTime(), p.getEndTime());
   }
+
+  @Test
+  public void testNoOverlapEventFirst() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(2), ""));
+    WorkPeriod period = new WorkPeriod(startLocalDate.atTime(3, 0), startLocalDate.atTime(4, 0));
+    calendar.addWorkPeriod(period);
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.first();
+    assertEquals(period.getStartTime(), p.getStartTime());
+    assertEquals(period.getEndTime(), p.getEndTime());
+  }
+
+  @Test
+  public void testSimpleOverlapPeriodFirst() {
+    WorkPeriod period = new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(3, 0));
+    calendar.addWorkPeriod(period);
+    Event event = Event.of(startZDateTime.withHour(2), startZDateTime.withHour(4), "");
+    calendar.addEvent(event);
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.first();
+    assertEquals(period.getStartTime(), p.getStartTime());
+    assertEquals(startZDateTime.withHour(2).toLocalDateTime(), p.getEndTime());
+  }
+
+  @Test
+  public void testSimpleOverlapEventFirst() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(3), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(2, 0), startLocalDate.atTime(4, 0)));
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.first();
+    assertEquals(startZDateTime.withHour(3).toLocalDateTime(), p.getStartTime());
+    assertEquals(startLocalDate.atTime(4, 0), p.getEndTime());
+  }
+
+  @Test
+  public void testPeriodSurroundsEvent() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(2), startZDateTime.withHour(3), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(4, 0)));
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(2, combined.size());
+    WorkPeriod p = combined.pollFirst();
+    assertEquals(startLocalDate.atTime(1, 0), p.getStartTime());
+    assertEquals(startZDateTime.withHour(2).toLocalDateTime(), p.getEndTime());
+    p = combined.pollFirst();
+    assertEquals(startZDateTime.withHour(3).toLocalDateTime(), p.getStartTime());
+    assertEquals(startLocalDate.atTime(4, 0), p.getEndTime());
+  }
 }

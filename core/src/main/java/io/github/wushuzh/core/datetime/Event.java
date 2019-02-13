@@ -33,4 +33,8 @@ public class Event implements Comparable<Event> {
     return startTime.withZoneSameInstant(zone).toLocalDateTime();
   }
 
+  public LocalDateTime getLocalEndDateTime(ZoneId zone) {
+    return endTime.withZoneSameInstant(zone).toLocalDateTime();
+  }
+
 }

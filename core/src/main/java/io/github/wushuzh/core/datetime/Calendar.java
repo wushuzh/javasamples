@@ -94,10 +94,23 @@ public class Calendar {
     WorkPeriod period = rawPeriods.pollFirst();
     Event event = events.isEmpty() ? null : events.first();
     while (period != null && event != null) {
-      if (! period.getEndTime().isAfter(event.getLocalStartDateTime(zone))) {
-        // non-overlapping, period first
+      if (period.getEndTime().isBefore(event.getLocalStartDateTime(zone))) {
+        // a. non-overlapping, period first
         overwrittenPeriods.add(period);
         period = rawPeriods.higher(period);
+      } else if (event.getLocalEndDateTime(zone).isBefore(period.getStartTime())) {
+        // b. non-overlapping, event first
+        event = events.higher(event);
+      } else if (period.getStartTime().isBefore(event.getLocalStartDateTime(zone))) {
+        // c. overlapping, period first
+        overwrittenPeriods.add(period.split(event.getLocalStartDateTime(zone)).get());
+      } else if (event.getLocalEndDateTime(zone).isBefore(period.getEndTime())) {
+        // d. overlapping, event first or at same time
+        period.split(event.getLocalEndDateTime(zone));
+        event = events.higher(event);
+      } else {
+        // event encloses period
+        period = workPeriods.higher(period);
       }
     }
     if (period != null) {
