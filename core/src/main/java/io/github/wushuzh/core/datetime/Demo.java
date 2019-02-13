@@ -1,6 +1,7 @@
 package io.github.wushuzh.core.datetime;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,6 +28,7 @@ public class Demo {
     // add an event to the calendar, specifying its time zone
     ZonedDateTime meetingTime =
         ZonedDateTime.of(testDate.atTime(8, 30), ZoneId.of("America/New_York"));
+    calendar.addEvent(meetingTime, Duration.ofHours(1), "Conference call with NYC");
 
     // create a working schedule
     Schedule schedule = calendar.createSchedule(testClock);

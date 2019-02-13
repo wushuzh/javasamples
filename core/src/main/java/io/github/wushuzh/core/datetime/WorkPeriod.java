@@ -139,4 +139,10 @@ public class WorkPeriod implements Comparable<WorkPeriod> {
   public int compareTo(WorkPeriod otherWorkPeriod) {
     return startTime.compareTo(otherWorkPeriod.startTime);
   }
+
+  public static WorkPeriod copy(WorkPeriod original) {
+    WorkPeriod newPeriod = new WorkPeriod(original.startTime, original.endTime);
+    newPeriod.setTaskParts(original.getTaskParts());
+    return newPeriod;
+  }
 }
