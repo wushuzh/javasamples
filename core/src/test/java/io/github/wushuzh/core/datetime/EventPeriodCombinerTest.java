@@ -106,4 +106,82 @@ public class EventPeriodCombinerTest {
     assertEquals(startZDateTime.withHour(3).toLocalDateTime(), p.getStartTime());
     assertEquals(startLocalDate.atTime(4, 0), p.getEndTime());
   }
+
+  @Test
+  public void testEventSurroundPeriod() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(4), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(2, 0), startLocalDate.atTime(3, 0)));
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertTrue(combined.isEmpty());
+  }
+
+  @Test
+  public void testSimultaneousStartEventLonger() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(3), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(2, 0)));
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+    assertTrue(combined.isEmpty());
+  }
+
+  @Test
+  public void testSimultaneousStartPeriodLonger() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(2), ""));
+    WorkPeriod period = new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(3, 0));
+    calendar.addWorkPeriod(period);
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.pollFirst();
+    assertEquals(startZDateTime.withHour(2).toLocalDateTime(), p.getStartTime());
+    assertEquals(startLocalDate.atTime(3, 0), p.getEndTime());
+  }
+
+  @Test
+  public void testSimultaneousEndEventLonger() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(4), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(2, 0), startLocalDate.atTime(4, 0)));
+    
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+    assertTrue(combined.isEmpty());
+  }
+
+  @Test
+  public void testSimultaneousEndPeriodLonger() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(3), startZDateTime.withHour(4), ""));
+    WorkPeriod period = new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(4, 0));
+    calendar.addWorkPeriod(period);
+
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.pollFirst();
+    assertEquals(startLocalDate.atTime(1, 0), p.getStartTime());
+    assertEquals(startZDateTime.withHour(3).toLocalDateTime(), p.getEndTime());
+  }
+
+  @Test
+  public void testAbuttingPeriodFirst() {
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(1, 0), startLocalDate.atTime(2, 0)));
+    calendar.addEvent(Event.of(startZDateTime.withHour(2), startZDateTime.withHour(3), ""));
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.pollFirst();
+    assertEquals(startLocalDate.atTime(1, 0), p.getStartTime());
+    assertEquals(startLocalDate.atTime(2, 0), p.getEndTime());
+  }
+
+  @Test
+  public void testAbuttingEventFirst() {
+    calendar.addEvent(Event.of(startZDateTime.withHour(1), startZDateTime.withHour(2), ""));
+    calendar.addWorkPeriod(new WorkPeriod(startLocalDate.atTime(2, 0), startLocalDate.atTime(3, 0)));
+    NavigableSet<WorkPeriod> combined = calendar.overwritePeriodsByEvents(clock.getZone());
+
+    assertEquals(1, combined.size());
+    WorkPeriod p = combined.pollFirst();
+    assertEquals(startLocalDate.atTime(2, 0), p.getStartTime());
+    assertEquals(startLocalDate.atTime(3, 0), p.getEndTime());
+  }
 }
