@@ -53,6 +53,19 @@ public class Schedule {
     NavigableMap<LocalDateTime, String> dateTimeToPeriodOutput = printablePeriods.stream()
       .collect(groupingBy(WorkPeriod::getStartTime, TreeMap::new, mapping(WorkPeriod::toString, joining())));
 
+    List<Event> printableEvents = events.stream().map(Event::copy).collect(toList());
+    List<Event> eventsSplitByMidnight = printableEvents.stream()
+      .map(e -> e.split(zoneId))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .collect(toList());
+    printableEvents.addAll(eventsSplitByMidnight);
+
+    Map<LocalDateTime, String> dateTimeToEventOutput = printableEvents.stream()
+      .collect(groupingBy(e -> e.getLocalStartDateTime(zoneId), mapping(e -> e.toString(zoneId), joining())));
+
+    dateTimeToPeriodOutput.putAll(dateTimeToEventOutput);
+
     NavigableMap<LocalDate, String> dateToCalendarObjectOutput = dateTimeToPeriodOutput.entrySet().stream()
       .collect(groupingBy(e -> e.getKey().toLocalDate(), TreeMap::new, mapping(Map.Entry::getValue, joining())));
 

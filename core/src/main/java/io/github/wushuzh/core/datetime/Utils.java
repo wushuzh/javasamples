@@ -47,4 +47,11 @@ public class Utils {
   public static boolean isWorkingDay(LocalDate d) {
     return d.getDayOfWeek() != DayOfWeek.SATURDAY && d.getDayOfWeek() != DayOfWeek.SUNDAY;
   }
+
+  public static String formatDuration(Duration d) {
+    long hours = d.toHours();
+    String hoursString = hours == 0 ? "" : hours + (hours == 1 ? "hr " : "hrs ");
+    long minutes = d.minusHours(hours).toMinutes();
+    return hoursString + minutes + "mins";
+  }
 }

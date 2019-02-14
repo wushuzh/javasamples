@@ -4,6 +4,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Optional;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Event implements Comparable<Event> {
   private ZonedDateTime startTime;
@@ -37,4 +42,27 @@ public class Event implements Comparable<Event> {
     return endTime.withZoneSameInstant(zone).toLocalDateTime();
   }
 
+  static Event copy(Event e) {
+    return Event.of(e.startTime, e.endTime, e.description);
+  }
+
+  public Optional<Event> split(ZoneId zone) {
+    LocalDateTime midnight = getLocalStartDateTime(zone).plusDays(1).truncatedTo(DAYS);
+    return split(midnight.atZone(zone));
+  }
+
+  private Optional<Event> split(ZonedDateTime splitTime) {
+    if (!splitTime.isAfter(startTime) || !splitTime.isBefore(endTime)) {
+      return Optional.empty();
+    }
+    endTime = splitTime;
+    Event e1 = new Event(splitTime, Duration.between(startTime, splitTime), description);
+    return Optional.of(e1);
+  }
+
+  public String toString(ZoneId zone) {
+    Duration dur = Duration.between(startTime, endTime);
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+    return "\n\t" + description +": " + timeFormatter.format(startTime.withZoneSameInstant(zone)) + ", duration = " + Utils.formatDuration(dur);
+  }
 }
