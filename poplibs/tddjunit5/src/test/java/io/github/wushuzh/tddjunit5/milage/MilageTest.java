@@ -3,9 +3,11 @@ package io.github.wushuzh.tddjunit5.milage;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import io.github.wushuzh.tddjunit5.airport.Flight;
 import io.github.wushuzh.tddjunit5.airport.Passenger;
@@ -20,6 +22,7 @@ class MilageTest {
     milage = new Milage();
   }
 
+  @Disabled
   @ParameterizedTest
   @ValueSource(strings = {
     "1; e; Mike; false; 349",
@@ -29,6 +32,14 @@ class MilageTest {
     "5; e; Mike; false; 623",
     "6; e; John; true; 978"})
   void checkGivenPoints(@ConvertWith(FlightArgumentConverter.class) Flight flight) {
+    for (Passenger passenger : flight.getPassengerSet()) {
+      milage.addMilage(passenger, flight.getDistance());
+    }
+  }
+
+  @ParameterizedTest
+  @CsvFileSource(resources = "/flights_info.csv")
+  void checkGivenPointsWithCsvInput(@ConvertWith(FlightArgumentConverter.class) Flight flight) {
     for (Passenger passenger : flight.getPassengerSet()) {
       milage.addMilage(passenger, flight.getDistance());
     }
