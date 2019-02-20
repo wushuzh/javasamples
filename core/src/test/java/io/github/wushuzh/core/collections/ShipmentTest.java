@@ -16,4 +16,22 @@ public class ShipmentTest {
     assertThat(shipment, contains(door, window));
   }
 
+  @Test
+  public void shouldReplaceItem() {
+    shipment.add(door);
+    shipment.add(floorPanel);
+
+    shipment.replace(floorPanel, window);
+
+    assertThat(shipment, contains(door, window));
+  }
+
+  @Test
+  public void shouldNotReplaceMissingItem() {
+    shipment.add(door);
+
+    shipment.replace(window, floorPanel);
+
+    assertThat(shipment, contains(door));
+  }
 }

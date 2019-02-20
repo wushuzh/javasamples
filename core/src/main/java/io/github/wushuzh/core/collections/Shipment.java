@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Shipment implements Iterable<Product> {
 
+  private static final int PRODUCT_NOT_PRESENT = -1;
   private final List<Product> products = new ArrayList<>();
 
   @Override
@@ -17,4 +18,10 @@ public class Shipment implements Iterable<Product> {
     products.add(product);
   }
 
+  public void replace(Product oldProduct, Product newProduct) {
+    int replaceIdx = products.indexOf(oldProduct);
+    if (replaceIdx != PRODUCT_NOT_PRESENT) {
+      products.set(replaceIdx, newProduct);
+    }
+  }
 }
