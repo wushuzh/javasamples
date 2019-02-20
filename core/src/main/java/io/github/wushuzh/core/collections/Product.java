@@ -13,6 +13,7 @@ public @ToString class Product {
     this.weight = weight;
   }
   // java8
+  public static final Comparator<Product> BY_NAME = comparing(Product::getName);
   public static final Comparator<Product> BY_WEIGHT = comparing(Product::getWeight);
   // java7
   public static final Comparator<Product> OLD_BY_WEIGHT
