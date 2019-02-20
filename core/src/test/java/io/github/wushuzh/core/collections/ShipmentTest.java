@@ -34,4 +34,16 @@ public class ShipmentTest {
 
     assertThat(shipment, contains(door));
   }
+
+  @Test
+  public void shouldIdentifyVanRequirements() {
+    shipment.add(door);
+    shipment.add(window);
+    shipment.add(floorPanel);
+
+    shipment.prepare();
+
+    assertThat(shipment.getLightVanProducts(), contains(window));
+    assertThat(shipment.getHeavyVanProducts(), contains(floorPanel, door));
+  }
 }
