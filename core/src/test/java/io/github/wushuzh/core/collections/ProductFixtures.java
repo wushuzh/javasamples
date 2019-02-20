@@ -14,5 +14,6 @@ public class ProductFixtures {
 
     kates.getProducts().add(door);
     kates.getProducts().add(floorPanel);
+    kates.getProducts().add(window);
   }
 }
