@@ -5,8 +5,8 @@ import lombok.val;
 
 public class TheArrayProblem {
   public static void main(String[] args) {
-    Product door = new Product("Wooden Door", 35);
-    Product floorPanel = new Product("Floor Panel", 25);
+    Product door = new Product(1, "Wooden Door", 35);
+    Product floorPanel = new Product(2, "Floor Panel", 25);
 
     // Create
     Product[] products = {door, floorPanel};
@@ -20,7 +20,7 @@ public class TheArrayProblem {
     // [Product(name=Wooden Door, weight=35), Product(name=Floor Panel, weight=25)]
 
     // Add
-    val windows = new Product("Window", 15);
+    val windows = new Product(3, "Window", 15);
     try {
       products[2] = windows;
     } catch (ArrayIndexOutOfBoundsException e) {

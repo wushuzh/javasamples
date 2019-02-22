@@ -6,9 +6,9 @@ import java.util.Iterator;
 
 public class CollectionConcepts {
   public static void main(String[] args) {
-    Product door = new Product("Wooden Door", 35);
-    Product floorPanel = new Product("Floor Panel", 25);
-    Product window = new Product("Glass Window", 10);
+    Product door = new Product(1, "Wooden Door", 35);
+    Product floorPanel = new Product(2, "Floor Panel", 25);
+    Product window = new Product(3, "Glass Window", 10);
 
     Collection<Product> products = new ArrayList<>();
     products.add(door);

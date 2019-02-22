@@ -1,14 +1,15 @@
 package io.github.wushuzh.core.collections;
 
+import static java.util.Comparator.comparing;
 import java.util.Comparator;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.ToString;
-import static java.util.Comparator.comparing;
 
 public @ToString class Product {
-  public Product(String name, int weight) {
+  public Product(final int id, final String name, final int weight) {
     super();
+    this.id = id;
     this.name = name;
     this.weight = weight;
   }
@@ -22,8 +23,12 @@ public @ToString class Product {
       return Integer.compare(p1.getWeight(), p2.getWeight());
     }
   };
+
+  @Getter
+  private final int id;
   @Getter private final String name;
   @Getter private final int weight;
+
   @Override
   public int hashCode() {
     return Objects.hash(name, weight);
