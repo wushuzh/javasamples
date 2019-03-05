@@ -13,8 +13,7 @@ public interface Comparator<T> {
   }
 
   public default Comparator<T> thenComparing(Function<T, Comparable> f) {
-    Comparator<T> cmp = comparing(f);
-    return thenComparing(cmp);
+    return thenComparing(comparing(f));
   }
 
   public static <U> Comparator<U> comparing(Function<U, Comparable> f) {
