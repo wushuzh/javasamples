@@ -10,5 +10,8 @@ public class MainComparator {
     Comparator<Person> cmpPersonByFirstName = Comparator.comparing(Person::getFirstName);
 
     Comparator<Person> complexCmp = cmpPersonByAge.thenComparing(cmpPersonByFirstName);
+
+    Comparator<Person> flexiableCmp = Comparator.comparing(Person::getAge)
+        .thenComparing(Person::getLastName).thenComparing(Person::getFirstName);
   }
 }

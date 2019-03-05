@@ -12,7 +12,12 @@ public interface Comparator<T> {
     return (p1, p2) -> compare(p1, p2) == 0 ? fallbackCmp.compare(p1, p2) : compare(p1, p2);
   }
 
-  public static Comparator<Person> comparing(Function<Person, Comparable> f) {
+  public default Comparator<T> thenComparing(Function<T, Comparable> f) {
+    Comparator<T> cmp = comparing(f);
+    return thenComparing(cmp);
+  }
+
+  public static <U> Comparator<U> comparing(Function<U, Comparable> f) {
     return (p1, p2) -> f.apply(p2).compareTo(f.apply(p1));
   }
 }
