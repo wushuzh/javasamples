@@ -15,7 +15,7 @@ public interface Predicate<T> {
     return t -> test(t) || other.test(t);
   }
 
-  public static Predicate<String> isEqualsTo(String string) {
-    return t -> t.equals(string);
+  public static <U> Predicate<U> isEqualsTo(U u) {
+    return t -> t.equals(u);
   }
 }

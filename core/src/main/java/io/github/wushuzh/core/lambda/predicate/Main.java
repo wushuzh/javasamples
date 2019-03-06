@@ -33,5 +33,12 @@ public class Main {
     System.out.println("p5 for No: " + p5.test("No"));
     // p5 for Yes: true
     // p5 for No: false
+
+    Predicate<Integer> p6 = Predicate.isEqualsTo(42);
+
+    System.out.println("p6 for 42: " + p6.test(42));
+    System.out.println("p6 for 1: " + p6.test(1));
+    // p6 for 42: true
+    // p6 for 1: false
   }
 }
