@@ -26,5 +26,12 @@ public class Main {
     // p4 for Yes: true
     // p4 for Good morning: true
     // p4 for Good morning gentlemen: true
+
+    Predicate<String> p5 = Predicate.isEqualsTo("Yes");
+
+    System.out.println("p5 for Yes: " + p5.test("Yes"));
+    System.out.println("p5 for No: " + p5.test("No"));
+    // p5 for Yes: true
+    // p5 for No: false
   }
 }
