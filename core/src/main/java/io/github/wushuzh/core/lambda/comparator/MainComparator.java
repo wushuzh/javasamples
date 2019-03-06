@@ -1,4 +1,4 @@
-package io.github.wushuzh.core.lambda;
+package io.github.wushuzh.core.lambda.comparator;
 
 public class MainComparator {
   public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package io.github.wushuzh.core.lambda;
+package io.github.wushuzh.core.lambda.comparator;
 
 import java.util.function.Function;
 
