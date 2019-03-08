@@ -37,5 +37,35 @@ public class MainMapAPI {
     // People from Paris: [Person(name=Alice, age=23)]
     // People from New York: [Person(name=Brian, age=56), Person(name=Chelsea, age=46)]
 
+    Map<City, List<Person>> map1 = new HashMap<>();
+    map1.computeIfAbsent(newYork, city -> new ArrayList<>()).add(p1);
+    map1.computeIfAbsent(shangHai, city -> new ArrayList<>()).add(p2);
+    map1.computeIfAbsent(shangHai, city -> new ArrayList<>()).add(p3);
+    map1.forEach((city, people) -> System.out.println(city + " : " + people));
+    // City(name=New York) : [Person(name=Alice, age=23)]
+    // City(name=Shanghai) : [Person(name=Brian, age=56), Person(name=Chelsea, age=46)]
+
+    Map<City, List<Person>> map2 = new HashMap<>();
+    map2.computeIfAbsent(shangHai, city -> new ArrayList<>()).add(p4);
+    map2.computeIfAbsent(paris, city -> new ArrayList<>()).add(p5);
+    map2.computeIfAbsent(paris, city -> new ArrayList<>()).add(p6);
+    map2.forEach((city, people) -> System.out.println(city + " : " + people));
+    // City(name=Paris) : [Person(name=Erica, age=37), Person(name=Francisco, age=18)]
+    // City(name=Shanghai) : [Person(name=David, age=28)]
+
+    map2.forEach((city2, people2) -> {
+      map1.merge(city2, people2, (peopleFromMap1, peopleFromMap2) -> {
+        peopleFromMap1.addAll(peopleFromMap2);
+        return peopleFromMap1;
+      });
+    });
+    System.out.println("Merged map1:");
+    map1.forEach((city, people) -> System.out.println(city + " : " + people));
+    // Merged map1:
+    // City(name=Paris) : [Person(name=Erica, age=37), Person(name=Francisco, age=18)]
+    // City(name=New York) : [Person(name=Alice, age=23)]
+    // City(name=Shanghai) : [Person(name=Brian, age=56), Person(name=Chelsea, age=46),
+    // Person(name=David, age=28)]
+
   }
 }
